@@ -1,3 +1,16 @@
+Metadata-Version: 2.4
+Name: spinner-wheel-app
+Version: 0.1.0
+Summary: Spinner wheel is an interactive python app for running wheels offline (first time has to be online though). Built with the Tkinter module in Python.
+Author-email: Sahas <sahas@shimpi.dev>
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
 # Spinner Wheel
 
 Spinner wheel is an interactive python app for running wheels offline (first time has to be online though). Built with the Tkinter module in Python.
@@ -22,44 +35,11 @@ Anyway, I colour picked the colours from some random dreamstime image on google 
 ### **4. the font**
 see... the arial font is not really that good (like it is, huge kudos to the person who made arial, its just... _so_ good that literally everything uses arial) so I used Red Hat Text Instead. I made sure this can work on Windows 11 but idk how to really do it on mac and the ai wont tell me either, so you just get to stick with arial sorry. I got the windows one to work with `urllib.request.urlretrieve()` to get it directly from the Red Hat GitHub repo (also so that if they ever update it for whatever reason this would too)
 
-### **5. high dpi**
+### ** 5. high dpi**
 I dont know if this can be coutned as a feature, but if you are using Tkinter then yes definetly since it was so pixellated when I first started it up, now at least it is a bit better. On windows at least, I use `ctypes.windll.shcore.SetProcessDpiAwareness(1)` to get the resoluton of monitor
 
 ### **6. Winner Announcement**
 A new popup appears with `show_winner()` whe nthe wheel spinning is done, I don't really know what else to say about this
 
 ## Installation
-
-### Install from Test PyPI
-
-```bash
-pip install -i https://test.pypi.org/simple/ spinner-wheel-app==0.1.0
-```
-
-### Run the app
-
-After installation, you can start the app in two ways:
-
-**Option 1: Using the console script**
-```bash
-spinner-wheel
-```
-
-**Option 2: Running as a Python module**
-```bash
-python -m namebox
-```
-
-Both commands will open the Spinner Wheel GUI where you can add participants and spin the wheel.
-
-### Requirements
-
-- Python 3.7 or higher
-- Tkinter (usually included with Python)
-- Internet connection on first run (to download the Red Hat Text font)
-
-### First Run
-
-The first time you run the app, it will automatically download the Red Hat Text font from GitHub. Subsequent runs will use the locally cached font.
-
-see... i keep getting told my readme is too small i really hope its good this time
+If you want to install it, just use the pypi package that I will send out in a bit (on test.pypi.org since i ont want to interfere with the real one)

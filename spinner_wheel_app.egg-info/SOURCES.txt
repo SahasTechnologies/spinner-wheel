@@ -1,0 +1,12 @@
+LICENSE
+MANIFEST.in
+README.md
+namebox.py
+pyproject.toml
+readme.md
+wheel.py
+spinner_wheel_app.egg-info/PKG-INFO
+spinner_wheel_app.egg-info/SOURCES.txt
+spinner_wheel_app.egg-info/dependency_links.txt
+spinner_wheel_app.egg-info/entry_points.txt
+spinner_wheel_app.egg-info/top_level.txt

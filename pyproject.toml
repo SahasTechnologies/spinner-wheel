@@ -20,5 +20,8 @@ dependencies = [
     # nothing... literally nothing
 ]
 
+[tool.setuptools]
+py-modules = ["namebox", "wheel"]
+
 [project.scripts]
 spinner-wheel = "namebox:main"
