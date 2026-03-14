@@ -1,166 +1,243 @@
+import math
+import random
+import time
 import tkinter as tk
 from tkinter import ttk
 
 
 _PALETTE = [
-    "#fc26a3",
-    "#fd566e",
-    "#fd9653",
-    "#bdf159",
-    "#6ef062",
-    "#24efc2",
-    "#26ccfa",
-    "#4690fb",
-    "#3c68eb",
-    "#433dba",
+    "#fc26a3", "#fd566e", "#fd9653", "#bdf159", "#6ef062",
+    "#24efc2", "#26ccfa", "#4690fb", "#3c68eb", "#433dba",
 ]
 
-def _assign_colors(count: int) -> list[str]:
+
+def _assign_random_colors(count: int) -> list[str]:
     if count <= 0:
         return []
 
     if count==1:
-        return [_PALETTE[0]]
+        return [random.choice(_PALETTE)]
+
+    colors = []
+    available = _PALETTE
+    random.shuffle(available)
+
 
     colors: list[str] = []
     first: str | None = None
 
     for i in range(count):
         prev = colors[-1] if colors else None
-        candidates = [_PALETTE[i % len(_PALETTE)]] + _PALETTE
+        choices = [c for c in available if c != prev]
 
-        for c in candidates:
-            if c == prev:
-                continue
-            if i == count - 1 and first is not None and c == first:
-                continue
+        if not choices
+        #reshuffle if for some random reason the thing decides not to work
+            available = _PALETTE[:]
+            random.shuffle(available)
+            choices = [c for c in available if c != prev]
 
-            colors.append(c)
-            if first is None:
-                first = c
-            break
-        else:
-            colors.append(_PALETTE[0])
+        colors.append(random.choice(choices))
+
+
+
+
+    
+    if colors[-1] == colors[0]:
+        for c in available:
+            if c != colors[0] and c != colors[-2]:
+                colors[-1] = c
+                break
 
     return colors
 
-def _draw_wheel(canvas: tk.Canvas, names: list[str], colors: list[str]) -> None:
-    canvas.delete("all")
-    if not names:
-        return
 
-    w = max(canvas.winfo_width(), 1)
-    h = max(canvas.winfo_height(), 1)
-    size = min(w, h)
+class WheelPopup:
+    def __init__(self, parent: tk.Misc, names: list[str]):
+        self.names = [str(n) for n in names]
+        self.colors = _assign_colors(len(self.names))
+        self.rotation = 0.0#0000000000000000000000000000000000000 idk i crashed out then just asked chat (gpt) to fix it
+        self.is_spinning = False
+        self._spin_start_ts = 0.0
+        self._spin_duration_s = 0.0
+        self._spin_start_rotation = 0.0
+        self._spin_total_degrees = 0.0
+        self.popup = tk.Toplevel(parent)
+        self.popup.title("Wheel")
+        self.popup.geometry("700x750")
+        self.popup.transient(parent)
+        self.popup.grab_set()
+        self.root = ttk.Frame(self.popup, padding= 16
+        )
+        self.root.pack (fill  = tk.BOTH, expand=True)
+        self.canvas = tk.Canvas(self.root, highlightthickness = 0) # i regret naming it so long
+        self.canvas.pack(fill = tk.BOTH, expand =True)
 
-    pad = max(int(size * 0.06), 12)
-    r = (size/ 2) - pad
-    cx = w/2
-    cy = h/2
+        spin_frame = ttk.Frame(self.root)
+        spin_frame.pack(fill=tk.BOTH, expand = True)
+        self.spin_btn = ttk.Button(spin_frame, text = "SPIN!", command = self._start_spin)
+        self.spin_btn.pack(fill=tk.X, ipady = 8)
 
-    bbox = (cx - r, cy - r, cx + r, cy + r)
+        btns=  ttk.Frame(self.root)
+        btns.pack(fill= tk.X, pady=(10,0))
+        ttk.Button(btns, text="Close", command = self.popup.destroy).pack(side = tk.RIGHT)
 
-    n = len(names)
-    extent = 360/n
-    start = 90
+        self.popup.bind("<Configure>", lambda _e: self._draw())
+        self.popup.after(0, self._draw)
 
-    font_family = "Red Hat Text"
-    font_size = max(int(size * 0.035), 10)
+        #drawing
+        def _draw(self):
+            self.canvas.delete("all")
+            if not self.names:
+                return
 
-    for i, name in enumerate(names):
-        seg_start = start - (i * extent)
-        canvas.create_arc(
-            bbox,
-            start = seg_start,
-            extent = -extent,
-            fill = colors[i],
-            outline = "",
+
+            w = max(self.canvas.winfo_width(), 1)
+            h = max(self.canvas.winfo_height(), 1)
+
+            size = min(w, h - 50)
+            pad = max(int(size * 0.06), 12)
+            r = (size / 2) - pad
+            cx = w / 2
+            cy = (h - 50) / 2
+            bbox = (cx - r, cy - r, cx + r, cy + r)
+
+            n = len(self.names)
+            extent = 360.0 / n
+
+            for i, color in enumerate(self.colors): #i typed colours :c since i dont speak american english
+                start_angle = 90 - self.rotation - (i * extent) #the problem is that idk when to write colours and when colors
+                                                                # so i just name everything without the o sadly and this causes so many bugs
+
+
+            self.canvas.create_arc(
+                bbox,
+                start=start_angle,
+                extent=-extent,
+                fill=color,
+                outline=""
+            )
+
+        #ik i deleted a lot but its in my git history so its fine ig
+
+        label_angle = start_angle - (extent / 2)
+        rad = math.radians(label_angle)
+        tx = cx + (r * 0.6) * math.cos(rad)
+        tx = cy - (r * 0.6) * math.sin(rad)
+        #i hope this works
+        #if it does im getting better in coding trig than my trig exam
+
+
+        self.canvas.create_text(
+            tx, ty,
+            text = self.names[i],
+
+
+            font = ("Red Hat Text", max(int(size * 0.035), 8), "bold"),
+            angle=label_angle
         )
 
-        if n ==1 :
-            label_deg = 90
-            text_angle = 270
-        
-        else:
-            step = 360/(n * 2) #calc angle
-            label_deg= (2*i+1) * step
-            text_angle = label_deg
-
-        label_rad = math.radians(label_deg)
-        tx = cx + (r * 0.62) * math.cos(label_rad)
-        ty = cy - (r * 0.62) * math.sin(label_rad)
-        #bro i just came back fro mtuition i dont ened sin cos tan
-
-        canvas.create_text(
-            tx,
-            ty,
-            text=str(name),
-            fill="white",
-            font=(font_family, font_size, "bold"),
-            width = int(r * 0.85),
-            justify="center",
-            angle = text_angle
-        )
-
+    #da pointer
+    # i need to add this to not get lost in this AAAARGH code
+    # idk why i selected python honestly at this point javascript woudl probably be easier
     pin_w = max(int(size * 0.04), 14)
     pin_h = max(int(size * 0.06), 22)
-    px = cx + r + (pad * 0.2)
-    py = cy
+    py = cy - r
 
-    canvas.create_polygon(
-        px,
-        py,
-        px + pin_w,
-        py - (pin_h /2),
-        px + pin_w,
-        py + (pin_h / 2),
-        fill="black",
-        outline="black",
+    self.canvas.create_polygon(
+        cx, py,
+        # QWURHWRG WHY DOES THIS HACKCLUB SPACE STOP RANDOMLY WHILE I AM ON IT
+        cx,- (pin_w / 2), py - pin_h,
+        cx + (pin_w / 2), py - pin_h,
+        fill="black" #TODO: change to black if too hard to see
     )
 
-def _debounced_redraw(popup: tk.Toplevel, canvas: tk.Canvas, names:list[str], colors: list[str]) -> None:
-    after_id = getattr(popup, "_wheel_after_id", None )
+    #WINNER! (this took SO long to code by myself)
+    # this was so ragebait that i quit and ask five different ais and each one made it worse
+    # so i had to paste from claude opus (i found 1 free chat / month somewhere on google) to tell me whats wrong
+    def _winner_index(self) -> int:
+        n = len(self.names)
+        extent = 360.0 / n
+        pointer_angle = 90.0 - 0.0001  # avoid boundary
 
-    if after_id is not None and after_id != "":
-        try:
-            popup.after_canvel(after_id)
-        except Exception:
-            pass
-    
-    def _do() -> None:
-        _draw_wheel(canvas, names, colors)
+        for i in range(n):
+            start = (90 - self.rotation - i * extent) % 360
+            end = (start - extent) % 360
 
-    popup._wheel_after_id = popup.after(50, _do)
+            if start >= end:
+                if end <= pointer_angle <= start:
+                    return i
+            else:
+                if pointer_angle >= end or pointer_angle <= start:
+                    return i
+
+        return 0
+
+    # ---------------- SPIN ----------------
+
+    def _start_spin(self):
+        if self.is_spinning or not self.names:
+            return
+
+        self.is_spinning = True
+        self.spin_btn.config(state="disabled")
+
+        self._spin_start_rotation = self.rotation % 360
+        self._spin_total_degrees = random.randint(8, 12) * 360 + random.uniform(0, 360)
+        self._spin_duration_s = 5.0
+        self._spin_start_ts = time.monotonic()
+
+        self._animate_spin()
+
+    def _animate_spin(self):
+        elapsed = time.monotonic() - self._spin_start_ts
+        t = min(1.0, elapsed / self._spin_duration_s)
+
+        eased = 1 - (1 - t) ** 3
+        self.rotation = (self._spin_start_rotation + self._spin_total_degrees * eased) % 360
+
+        self._draw()
+
+        if t < 1.0:
+            self.popup.after(16, self._animate_spin)
+        else:
+            self.is_spinning = False
+            self.spin_btn.config(state="normal")
+            self._show_winner()
+
+    # ---------------- WINNER POPUP ----------------
+
+    def _show_winner(self):
+        idx = self._winner_index()
+        winner = self.names[idx]
+        color = self.colors[idx]
+
+        win_popup = tk.Toplevel(self.popup)
+        win_popup.title("Winner!")
+        win_popup.geometry("500x400")
+        win_popup.configure(bg=color)
+        win_popup.grab_set()
+
+        frame = tk.Frame(win_popup, bg=color)
+        frame.pack(fill=tk.BOTH, expand=True, padx=30, pady=30)
+
+        tk.Label(
+            frame,
+            text=winner,
+            font=("Red Hat Text", 48, "bold"),
+            fg="white",
+            bg=color
+        ).pack(expand=True)
+
+        tk.Label(
+            frame,
+            text="WINS!",
+            font=("Red Hat Text", 32, "bold"),
+            fg="white",
+            bg=color
+        ).pack()
+
+        ttk.Button(frame, text="OK", command=win_popup.destroy).pack(pady=20)
 
 
-
-def show_popup(parent: tk.Misc, names: list[str]) -> tk.TopLevel:
-    popup = tk.TopLevel(parent)
-    popup.title("Wheel")
-    popup.geometry("700x700")
-    popup.transient(parent)
-    popup.grab_set()
-
-    root = ttk.Frame(popup, padding=16)
-    root.pack(fill=tk.BOTH, expand = True)
-    colors = _assign_colors(len(names))
-    canvas = tk.Canvas(root, highlightthickness=0)
-    canvas.pack(fill=tk.BOTH, expand=True)
-
-    popup.bind(
-        "<Configure>",
-        lambda _e: _debounced_redraw(popup, canvas, names, colors),
-
-
-    )
-    popup.after(0, lambda: _draw_wheel(canvas, names, colors))
-    
-    btns = ttk.Frame(root)
-    btns.pack(fill=tk.X, pady=(12, 0))
-
-    close_btn = ttk.Button(btns, text="Close", command=popup.destroy)
-    close_btn.pack(side=tk.RIGHT)
-
-    popup.wait_visibility()
-    popup.focus_set()
-    return popup
+def show_popup(parent: tk.Misc, names: list[str]):
+    return WheelPopup(parent, names).popup
