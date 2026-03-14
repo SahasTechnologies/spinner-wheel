@@ -30,7 +30,7 @@ def _assign_random_colors(count: int) -> list[str]:
         prev = colors[-1] if colors else None
         choices = [c for c in available if c != prev]
 
-        if not choices
+        if not choices:
         #reshuffle if for some random reason the thing decides not to work
             available = _PALETTE[:]
             random.shuffle(available)
