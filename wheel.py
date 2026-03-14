@@ -54,7 +54,7 @@ def _assign_random_colors(count: int) -> list[str]:
 class WheelPopup:
     def __init__(self, parent: tk.Misc, names: list[str]):
         self.names = [str(n) for n in names]
-        self.colors = _assign_colors(len(self.names))
+        self.colors = _assign_random_colors(len(self.names))
         self.rotation = 0.0#0000000000000000000000000000000000000 idk i crashed out then just asked chat (gpt) to fix it
         self.is_spinning = False
         self._spin_start_ts = 0.0
@@ -84,30 +84,26 @@ class WheelPopup:
         self.popup.bind("<Configure>", lambda _e: self._draw())
         self.popup.after(0, self._draw)
 
-        #drawing
-        def _draw(self):
-            self.canvas.delete("all")
-            if not self.names:
-                return
+    def _draw(self):
+        self.canvas.delete("all")
+        if not self.names:
+            return
 
+        w = max(self.canvas.winfo_width(), 1)
+        h = max(self.canvas.winfo_height(), 1)
 
-            w = max(self.canvas.winfo_width(), 1)
-            h = max(self.canvas.winfo_height(), 1)
+        size = min(w, h - 50)
+        pad = max(int(size * 0.06), 12)
+        r = (size / 2) - pad
+        cx = w / 2
+        cy = (h - 50) / 2
+        bbox = (cx - r, cy - r, cx + r, cy + r)
 
-            size = min(w, h - 50)
-            pad = max(int(size * 0.06), 12)
-            r = (size / 2) - pad
-            cx = w / 2
-            cy = (h - 50) / 2
-            bbox = (cx - r, cy - r, cx + r, cy + r)
+        n = len(self.names)
+        extent = 360.0 / n
 
-            n = len(self.names)
-            extent = 360.0 / n
-
-            for i, color in enumerate(self.colors): #i typed colours :c since i dont speak american english
-                start_angle = 90 - self.rotation - (i * extent) #the problem is that idk when to write colours and when colors
-                                                                # so i just name everything without the o sadly and this causes so many bugs
-
+        for i, color in enumerate(self.colors):
+            start_angle = 90 - self.rotation - (i * extent)
 
             self.canvas.create_arc(
                 bbox,
@@ -117,39 +113,31 @@ class WheelPopup:
                 outline=""
             )
 
-        #ik i deleted a lot but its in my git history so its fine ig
+            label_angle = start_angle - (extent / 2)
+            rad = math.radians(label_angle)
+            tx = cx + (r * 0.6) * math.cos(rad)
+            ty = cy - (r * 0.6) * math.sin(rad)
 
-        label_angle = start_angle - (extent / 2)
-        rad = math.radians(label_angle)
-        tx = cx + (r * 0.6) * math.cos(rad)
-        tx = cy - (r * 0.6) * math.sin(rad)
-        #i hope this works
-        #if it does im getting better in coding trig than my trig exam
+            self.canvas.create_text(
+                tx, ty,
+                text=self.names[i],
+                font=("Red Hat Text", max(int(size * 0.035), 8), "bold"),
+                angle=label_angle
+            )
 
-
-        self.canvas.create_text(
-            tx, ty,
-            text = self.names[i],
-
-
-            font = ("Red Hat Text", max(int(size * 0.035), 8), "bold"),
-            angle=label_angle
-        )
-
-    #da pointer
+        #da pointer
     # i need to add this to not get lost in this AAAARGH code
     # idk why i selected python honestly at this point javascript woudl probably be easier
-    pin_w = max(int(size * 0.04), 14)
-    pin_h = max(int(size * 0.06), 22)
-    py = cy - r
+        pin_w = max(int(size * 0.04), 14)
+        pin_h = max(int(size * 0.06), 22)
+        py = cy - r
 
-    self.canvas.create_polygon(
-        cx, py,
-        # QWURHWRG WHY DOES THIS HACKCLUB SPACE STOP RANDOMLY WHILE I AM ON IT
-        cx,- (pin_w / 2), py - pin_h,
-        cx + (pin_w / 2), py - pin_h,
-        fill="black" #TODO: change to black if too hard to see
-    )
+        self.canvas.create_polygon(
+            cx, py,
+            cx - (pin_w / 2), py - pin_h,
+            cx + (pin_w / 2), py - pin_h,
+            fill="black" #TODO: change to black if too hard to see
+        )
 
     #WINNER! (this took SO long to code by myself)
     # this was so ragebait that i quit and ask five different ais and each one made it worse

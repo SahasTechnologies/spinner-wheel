@@ -1,10 +1,12 @@
 LICENSE
 MANIFEST.in
 README.md
+RedHatTextVF.ttf
 namebox.py
 pyproject.toml
 readme.md
 wheel.py
+./RedHatTextVF.ttf
 spinner_wheel_app.egg-info/PKG-INFO
 spinner_wheel_app.egg-info/SOURCES.txt
 spinner_wheel_app.egg-info/dependency_links.txt

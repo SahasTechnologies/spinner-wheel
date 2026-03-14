@@ -32,25 +32,20 @@ A new popup appears with `show_winner()` whe nthe wheel spinning is done, I don'
 
 ### Install from Test PyPI
 
+**Latest stable version (v0.1.3):**
 ```bash
-pip install -i https://test.pypi.org/simple/ spinner-wheel-app==0.1.0
+pip install -i https://test.pypi.org/simple/ spinner-wheel-app==0.1.3
 ```
 
 ### Run the app
 
-After installation, you can start the app in two ways:
+After installation, you can start the app:
 
-**Option 1: Using the console script**
-```bash
-spinner-wheel
-```
-
-**Option 2: Running as a Python module**
 ```bash
 python -m namebox
 ```
 
-Both commands will open the Spinner Wheel GUI where you can add participants and spin the wheel.
+This will open the Spinner Wheel GUI where you can add participants and spin the wheel.
 
 ### Requirements
 
@@ -60,6 +55,6 @@ Both commands will open the Spinner Wheel GUI where you can add participants and
 
 ### First Run
 
-The first time you run the app, it will automatically download the Red Hat Text font from GitHub. Subsequent runs will use the locally cached font.
+Yeah the first time you run this it needs the internet for the font to download but after that it works offline.
 
 see... i keep getting told my readme is too small i really hope its good this time
